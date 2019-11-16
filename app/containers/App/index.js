@@ -21,18 +21,33 @@ import RTL from '../../layouts/RTL.jsx';
 import LoginPage from '../LoginPage';
 
 import '../../assets/css/material-dashboard-react.css?v=1.6.0';
+import SignUpPage from "../SignUpPage";
+import ForgotPassword from "../ForgotPassword";
+
+
+const SecretRoute = ({ component: Component, ...rest }) => (
+    <Route {...rest} render={(props) => (
+        localStorage.token
+            ? <Component {...props} />
+            : <Redirect to={{
+                pathname: '/login',
+                state: { from: props.location }
+            }} />
+    )} />
+);
 
 export default function App() {
   return (
     <div>
       <Switch>
-         <Route exact path="/" component={LoginPage} />
-         <Route exact path="/sign-up" component={LoginPage} />
+         <Route exact path="/login" component={LoginPage} />
+         <Route exact path="/sign-up" component={SignUpPage} />
+         <Route exact path="/forgot-password" component={ForgotPassword} />
         {/*<Route component={NotFoundPage} />*/}
         <Route path="/admin" component={Admin} />
         <Route path="/rtl" component={RTL} />
         {/*<Redirect from="/" to="/admin/dashboard" />*/}
-        {/*<Redirect from="/" to="/admin/dashboard" />*/}
+        <SecretRoute from="/" to="/admin/dashboard" />
       </Switch>
       {/*<GlobalStyle />*/}
     </div>
