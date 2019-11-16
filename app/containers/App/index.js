@@ -16,14 +16,12 @@ import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import GlobalStyle from '../../global-styles';
 
 // core components
-import Admin from '../../layouts/Admin.jsx';
 import RTL from '../../layouts/RTL.jsx';
 import LoginPage from '../LoginPage';
-
-import '../../assets/css/material-dashboard-react.css?v=1.6.0';
 import SignUpPage from "../SignUpPage";
+import Admin from '../../layouts/Admin.jsx';
 import ForgotPassword from "../ForgotPassword";
-
+import '../../assets/css/material-dashboard-react.css?v=1.6.0';
 
 const SecretRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={(props) => (

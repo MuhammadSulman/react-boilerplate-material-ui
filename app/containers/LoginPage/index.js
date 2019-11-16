@@ -4,15 +4,15 @@
  *
  */
 
-import React from "react";
+import React, {useState} from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { FormattedMessage } from "react-intl";
 import { createStructuredSelector } from "reselect";
 import { compose } from "redux";
 
-import { useInjectSaga } from "utils/injectSaga";
-import { useInjectReducer } from "utils/injectReducer";
+import { useInjectSaga } from "../../utils/injectSaga";
+import { useInjectReducer } from "../../utils/injectReducer";
 import makeSelectLoginPage from "./selectors";
 import reducer from "./reducer";
 import saga from "./saga";
@@ -30,7 +30,7 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { Link } from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
 
 
 function Copyright() {
@@ -75,12 +75,24 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export function LoginPage() {
+const key = "loginPage";
+
+
+export function LoginPage({
+                            onSubmit,
+                            location
+                          }) {
+  useInjectReducer({ key, reducer });
+  useInjectSaga({ key, saga });
+
   const classes = useStyles();
+  const { from } = location.state || { from: { pathname: "/" } };
 
-  useInjectReducer({ key: "loginPage", reducer });
-  useInjectSaga({ key: "loginPage", saga });
+  if (false) {
+    return <Redirect to={from} />;
+  }
 
+  console.log(from);
   return (
       <Grid container component="main" className={classes.root}>
         <CssBaseline />
@@ -153,13 +165,13 @@ export function LoginPage() {
   );
 }
 
-const mapStateToProps = createStructuredSelector({
-  loginPage: makeSelectLoginPage()
+const mapStateToProps = (state) => ({
+  loginPage: makeSelectLoginPage()(state)
 });
 
 function mapDispatchToProps(dispatch) {
   return {
-    dispatch
+    onSubmit: () => dispatch(submit(data))
   };
 }
 
