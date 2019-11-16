@@ -16,6 +16,7 @@ import { useInjectReducer } from "../../utils/injectReducer";
 import makeSelectLoginPage from "./selectors";
 import reducer from "./reducer";
 import saga from "./saga";
+import { submit, changeInput } from './actions';
 import messages from "./messages";
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -31,6 +32,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import {Link, Redirect} from 'react-router-dom'
+import { Field, reduxForm, } from 'redux-form';
 
 
 function Copyright() {
@@ -79,8 +81,9 @@ const key = "loginPage";
 
 
 export function LoginPage({
-                            onSubmit,
-                            location
+                            onFormSubmit,
+                            location,
+                            onChangeInput
                           }) {
   useInjectReducer({ key, reducer });
   useInjectSaga({ key, saga });
@@ -91,8 +94,27 @@ export function LoginPage({
   if (false) {
     return <Redirect to={from} />;
   }
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    console.log(evt);
+  }
 
-  console.log(from);
+  const Input = ({name, id, label}) => {
+    return (
+        <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            label={label}
+            name={name}
+            autoComplete={name}
+            onChange={(evt) => onChangeInput({email: evt.target.value})}
+            autoFocus
+        />
+    )
+  };
+
   return (
       <Grid container component="main" className={classes.root}>
         <CssBaseline />
@@ -106,17 +128,7 @@ export function LoginPage({
               Sign in
             </Typography>
             <form className={classes.form} noValidate>
-              <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  autoFocus
-              />
+
               <TextField
                   variant="outlined"
                   margin="normal"
@@ -126,23 +138,25 @@ export function LoginPage({
                   label="Password"
                   type="password"
                   id="password"
+                  onChange={(evt) => onChangeInput({password: evt.target.value})}
                   autoComplete="current-password"
               />
               <FormControlLabel
                   control={<Checkbox value="remember" color="primary" />}
                   label="Remember me"
               />
-              <Link to={'/'} >
+              {/*<Link to={'/'} >*/}
                 <Button
-                    type="submit"
+                    onClick={onFormSubmit}
                     fullWidth
-                    variant="contained"
                     color="primary"
+                    htmltype="submit"
+                    variant="contained"
                     className={classes.submit}
                 >
                     Sign In
                 </Button>
-              </Link>
+              {/*</Link>*/}
               <Grid container>
                 <Grid item xs>
                   <Link to="forgot-password" variant="body2">
@@ -171,13 +185,18 @@ const mapStateToProps = (state) => ({
 
 function mapDispatchToProps(dispatch) {
   return {
-    onSubmit: () => dispatch(submit(data))
+    onChangeInput: requestPayload => dispatch(changeInput(requestPayload)),
+    onFormSubmit: data => dispatch(submit(data.target))
   };
 }
+
+const loginForm = reduxForm({
+  form: 'LoginForm',
+});
 
 const withConnect = connect(
   mapStateToProps,
   mapDispatchToProps
 );
 
-export default compose(withConnect)(LoginPage);
+export default compose(withConnect, loginForm)(LoginPage);
