@@ -32,7 +32,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import {Link, Redirect} from 'react-router-dom'
-import { Field, reduxForm, } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
 
 
 function Copyright() {
@@ -79,41 +79,41 @@ const useStyles = makeStyles(theme => ({
 
 const key = "loginPage";
 
+const Input = ({name, input, label, placeHolder, type, children, ...rest}) => {
+  return (
+      <TextField
+          placeholder={placeHolder}
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          label={label}
+          name={name}
+          type={type}
+          autoComplete={name}
+          autoFocus
+          {...input} {...rest}
+      >
+        {children}
+      </TextField>
+  )
+};
 
 export function LoginPage({
-                            onFormSubmit,
+                            history,
                             location,
-                            onChangeInput
+                            onFormSubmit,
+                            onChangeInput,
+                            handleSubmit
                           }) {
   useInjectReducer({ key, reducer });
   useInjectSaga({ key, saga });
 
   const classes = useStyles();
   const { from } = location.state || { from: { pathname: "/" } };
-
   if (false) {
     return <Redirect to={from} />;
   }
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
-    console.log(evt);
-  }
-
-  const Input = ({name, id, label}) => {
-    return (
-        <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            label={label}
-            name={name}
-            autoComplete={name}
-            onChange={(evt) => onChangeInput({email: evt.target.value})}
-            autoFocus
-        />
-    )
-  };
 
   return (
       <Grid container component="main" className={classes.root}>
@@ -127,36 +127,38 @@ export function LoginPage({
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <form className={classes.form} noValidate>
-
-              <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
+            <form className={classes.form}  onSubmit={handleSubmit((formData) => onFormSubmit({formData, history}) ) } >
+              <Field
+                  style={{ marginBottom: 12}}
+                  name="email"
+                  component={Input}
+                  placeholder="Email"
+                  label="Email"
+                  type="email"
+              />
+              <Field
+                  style={{ marginBottom: 12}}
                   name="password"
+                  component={Input}
+                  placeholder="Password"
                   label="Password"
                   type="password"
-                  id="password"
-                  onChange={(evt) => onChangeInput({password: evt.target.value})}
-                  autoComplete="current-password"
               />
               <FormControlLabel
                   control={<Checkbox value="remember" color="primary" />}
                   label="Remember me"
               />
-              {/*<Link to={'/'} >*/}
+
                 <Button
-                    onClick={onFormSubmit}
                     fullWidth
                     color="primary"
-                    htmltype="submit"
+                    type="submit"
                     variant="contained"
                     className={classes.submit}
                 >
                     Sign In
                 </Button>
-              {/*</Link>*/}
+
               <Grid container>
                 <Grid item xs>
                   <Link to="forgot-password" variant="body2">
@@ -186,7 +188,7 @@ const mapStateToProps = (state) => ({
 function mapDispatchToProps(dispatch) {
   return {
     onChangeInput: requestPayload => dispatch(changeInput(requestPayload)),
-    onFormSubmit: data => dispatch(submit(data.target))
+    onFormSubmit: requestPayload => dispatch(submit(requestPayload))
   };
 }
 

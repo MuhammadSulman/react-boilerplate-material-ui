@@ -23,10 +23,12 @@ import Admin from '../../layouts/Admin.jsx';
 import ForgotPassword from "../ForgotPassword";
 import '../../assets/css/material-dashboard-react.css?v=1.6.0';
 
+
 const SecretRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={(props) => (
         localStorage.token
-            ? <Component {...props} />
+            // ? <Component {...props} />
+            ? <Redirect from="/" to="/admin/dashboard" />
             : <Redirect to={{
                 pathname: '/login',
                 state: { from: props.location }
@@ -45,7 +47,7 @@ export default function App() {
         <Route path="/admin" component={Admin} />
         <Route path="/rtl" component={RTL} />
         {/*<Redirect from="/" to="/admin/dashboard" />*/}
-        <SecretRoute from="/" to="/admin/dashboard" />
+        <SecretRoute from="/" />
       </Switch>
       {/*<GlobalStyle />*/}
     </div>

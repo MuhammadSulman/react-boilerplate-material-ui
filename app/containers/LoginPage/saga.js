@@ -6,22 +6,14 @@ import {takeLatest, all, put, call} from 'redux-saga/effects';
 
 function* workerSubmit(action) {
     try {
-        const payload = action.payload;
-        const username = payload.data.email;
-        const password = payload.data.password;
+        const requestPayload = action.requestPayload;
 
-        const token = btoa(username + ":" + password);
-        const response = yield Request.get(constants.LOGIN_API_URL, {
-            headers: {
-                Authorization: 'Basic ' + token
-            }
-        });
+        const response = yield Request.post(constants.LOGIN_API_URL, requestPayload.formData);
 
-        if(response.id) {
-            localStorage.setItem('token', token);
-            localStorage.setItem('id', response);
+        if(response.token) {
+            localStorage.setItem('token', response.token);
             yield put(appActions.initializeAuthUser(response));
-            yield call(payload.history.push('/'));
+            yield call(requestPayload.history.push('/'));
         }
     } catch (error) {
         console.log(error);

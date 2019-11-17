@@ -19,4 +19,3 @@ export const UPLOAD_IMAGE_API_URL = '/files/upload';
 export const FETCH_AUTH_USER = APP_NAME + '/App/FETCH_AUTH_USER';
 export const FETCH_AUTH_USER_SUCCESS = APP_NAME + '/App/FETCH_AUTH_USER_SUCCESS';
 
-export const LOGIN_API_URL =  '/account';

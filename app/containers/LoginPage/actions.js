@@ -15,11 +15,10 @@ export function changeInput(requestPayload) {
   };
 }
 
-export function submit(data) {
-  // console.log(data);
+export function submit(requestPayload) {
   return {
     type: actions.SUBMIT_FORM,
-    data,
+    requestPayload,
   };
 }
 

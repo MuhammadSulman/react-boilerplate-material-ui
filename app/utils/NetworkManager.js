@@ -2,6 +2,7 @@ import axios from 'axios';
 
 class Request {
     static defaultOptions () {
+        console.log(process.env.API_URL);
         return {
             baseURL: process.env.API_URL,
             config: {
