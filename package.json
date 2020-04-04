@@ -83,7 +83,7 @@
     "invariant": "2.2.4",
     "ip": "1.1.5",
     "lodash": "4.17.12",
-    "minimist": "1.2.0",
+    "minimist": "1.2.3",
     "perfect-scrollbar": "1.4.0",
     "prettier": "1.16.4",
     "prop-types": "15.7.2",
