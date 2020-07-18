@@ -4,18 +4,19 @@
  *
  */
 
-import React from "react";
+import React, {useState} from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { FormattedMessage } from "react-intl";
 import { createStructuredSelector } from "reselect";
 import { compose } from "redux";
 
-import { useInjectSaga } from "utils/injectSaga";
-import { useInjectReducer } from "utils/injectReducer";
+import { useInjectSaga } from "../../utils/injectSaga";
+import { useInjectReducer } from "../../utils/injectReducer";
 import makeSelectLoginPage from "./selectors";
 import reducer from "./reducer";
 import saga from "./saga";
+import { submit, changeInput } from './actions';
 import messages from "./messages";
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -23,22 +24,24 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
+// import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import {Link, Redirect} from 'react-router-dom'
+import { Field, reduxForm } from 'redux-form';
 
 
 function Copyright() {
   return (
       <Typography variant="body2" color="textSecondary" align="center">
         {'Copyright © '}
-        <Link color="inherit" href="https://material-ui.com/">
-          Your Website
-        </Link>{' '}
+        {/*<Link href="https://material-ui.com/">*/}
+        {/*  Your Website*/}
+        {/*</Link>{' '}*/}
         {new Date().getFullYear()}
         {'.'}
       </Typography>
@@ -74,11 +77,43 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export function LoginPage() {
-  const classes = useStyles();
+const key = "loginPage";
 
-  useInjectReducer({ key: "loginPage", reducer });
-  useInjectSaga({ key: "loginPage", saga });
+const Input = ({name, input, label, placeHolder, type, children, ...rest}) => {
+  return (
+      <TextField
+          placeholder={placeHolder}
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          label={label}
+          name={name}
+          type={type}
+          autoComplete={name}
+          autoFocus
+          {...input} {...rest}
+      >
+        {children}
+      </TextField>
+  )
+};
+
+export function LoginPage({
+                            history,
+                            location,
+                            onFormSubmit,
+                            onChangeInput,
+                            handleSubmit
+                          }) {
+  useInjectReducer({ key, reducer });
+  useInjectSaga({ key, saga });
+
+  const classes = useStyles();
+  const { from } = location.state || { from: { pathname: "/" } };
+  if (false) {
+    return <Redirect to={from} />;
+  }
 
   return (
       <Grid container component="main" className={classes.root}>
@@ -92,50 +127,46 @@ export function LoginPage() {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <form className={classes.form} noValidate>
-              <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
+            <form className={classes.form}  onSubmit={handleSubmit((formData) => onFormSubmit({formData, history}) ) } >
+              <Field
+                  style={{ marginBottom: 12}}
                   name="email"
-                  autoComplete="email"
-                  autoFocus
+                  component={Input}
+                  placeholder="Email"
+                  label="Email"
+                  type="email"
               />
-              <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
+              <Field
+                  style={{ marginBottom: 12}}
                   name="password"
+                  component={Input}
+                  placeholder="Password"
                   label="Password"
                   type="password"
-                  id="password"
-                  autoComplete="current-password"
               />
               <FormControlLabel
                   control={<Checkbox value="remember" color="primary" />}
                   label="Remember me"
               />
-              <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-              >
-                Sign In
-              </Button>
+
+                <Button
+                    fullWidth
+                    color="primary"
+                    type="submit"
+                    variant="contained"
+                    className={classes.submit}
+                >
+                    Sign In
+                </Button>
+
               <Grid container>
                 <Grid item xs>
-                  <Link href="#" variant="body2">
+                  <Link to="forgot-password" variant="body2">
                     Forgot password?
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link href="#" variant="body2">
+                  <Link to="sign-up" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
@@ -150,23 +181,24 @@ export function LoginPage() {
   );
 }
 
-LoginPage.propTypes = {
-  dispatch: PropTypes.func.isRequired
-};
-
-const mapStateToProps = createStructuredSelector({
-  loginPage: makeSelectLoginPage()
+const mapStateToProps = (state) => ({
+  loginPage: makeSelectLoginPage()(state)
 });
 
 function mapDispatchToProps(dispatch) {
   return {
-    dispatch
+    onChangeInput: requestPayload => dispatch(changeInput(requestPayload)),
+    onFormSubmit: requestPayload => dispatch(submit(requestPayload))
   };
 }
+
+const loginForm = reduxForm({
+  form: 'LoginForm',
+});
 
 const withConnect = connect(
   mapStateToProps,
   mapDispatchToProps
 );
 
-export default compose(withConnect)(LoginPage);
+export default compose(withConnect, loginForm)(LoginPage);

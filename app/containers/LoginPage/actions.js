@@ -4,10 +4,27 @@
  *
  */
 
-import { DEFAULT_ACTION } from "./constants";
+import * as actions from './constants';
 
-export function defaultAction() {
+
+export function changeInput(requestPayload) {
+  // console.log(evt)
   return {
-    type: DEFAULT_ACTION
+    type: actions.CHANGE_INPUT,
+    requestPayload,
   };
+}
+
+export function submit(requestPayload) {
+  return {
+    type: actions.SUBMIT_FORM,
+    requestPayload,
+  };
+}
+
+export function submitFormFailure(error) {
+  return {
+    type: actions.SUBMIT_FORM_FAILURE,
+    error,
+  }
 }

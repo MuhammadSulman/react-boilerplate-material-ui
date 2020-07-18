@@ -2,9 +2,15 @@ import axios from 'axios';
 
 class Request {
     static defaultOptions () {
+        console.log(process.env.API_URL);
         return {
-            baseURL: "",
-            config: { headers: { 'Accept-Encoding': 'gzip' }}
+            baseURL: process.env.API_URL,
+            config: {
+                headers: {
+                    'Accept-Encoding': 'gzip',
+                    Authorization: localStorage.token ? `Basic ${localStorage.token}` : '',
+                }
+            }
         };
     }
 
