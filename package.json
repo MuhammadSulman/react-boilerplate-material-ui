@@ -82,7 +82,7 @@
     "intl": "1.2.5",
     "invariant": "2.2.4",
     "ip": "1.1.5",
-    "lodash": "4.17.12",
+    "lodash": "4.17.21",
     "minimist": "1.2.0",
     "perfect-scrollbar": "1.4.0",
     "prettier": "1.16.4",
